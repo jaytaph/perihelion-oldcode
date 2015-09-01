@@ -1,0 +1,366 @@
+#!/usr/bin/perl
+#
+#
+use strict;
+use Socket;
+use English;
+use lib '../globalperl/';
+use constants;
+
+use px_mysql;         # SQL Functions
+use px_config;        # Configuration routines
+
+use px_attack;        # Standard 'object' functions
+use px_anomaly;
+use px_blackhole;
+use px_building;
+use px_csl;
+use px_message;
+use px_nebula;
+use px_planet;
+use px_preset;
+use px_sector;
+use px_trade;
+use px_user;
+use px_vessel;
+use px_wormhole;
+
+use px_ef_building;   # Execution functions
+use px_ef_item;
+use px_ef_vessel;
+
+# Set this now, so it's copied into the childs...
+setpid ();
+my $parent_pid;
+
+sub setpid () {
+  $main::parent_pid = $$;
+}
+
+# =========================================================
+# Server only serves this galaxy
+#my $glxy_param = $ARGV[0];
+#if ($glxy_param eq "") { $glxy_param = "galaxy_001"; }
+#px_config::set_galaxy ($glxy_param);
+
+
+# Privilege is set in ID.inc:
+#   None         = only ID is allowed
+#   Restricted   = ID issued, but without user. Only LOGIN, EOS etc can be issued
+#   Normal       = All normal commands can be issued
+#   Unrestricted = All commands including admin commands can be issued
+use constant NONE         => 0;
+use constant RESTRICTED   => 10;
+use constant NORMAL       => 50;
+use constant UNRESTRICTED => 100;
+
+
+
+# Check our OS and load the include files
+my @commands;
+my $OS_win = ($OSNAME eq "MSWin32") ? 1 : 0;
+
+print "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n";
+print "Operating System Information\n";
+print "  OS Name      : $OSNAME\n";
+print "  Perl version : $]\n";
+print "  Started on   : $BASETIME\n";
+print "\n";
+
+# Load include files
+if ($OS_win) {
+  load_win_incs ();
+} else {
+  load_unix_incs ();
+}
+
+# Check for the mandatory functions
+if (not function_loaded ("id")) {
+  px_shutdown ("*** WARNING: ID function is not loaded.\n");
+  exit;
+}
+if (not function_loaded ("eos")) {
+  px_shutdown ("*** WARNING: EOS function is not loaded\n");
+  exit;
+}
+
+# Make sure all our output is unbuffered
+$|=1;
+
+
+# Setup Signal Handlers
+$SIG{'CHLD'} = \&reaper;        # Kill all children when they ended
+$SIG{'HUP'}  = 'px_shutdown';   # HUP signal (1) shuts down daemon correctly.
+$SIG{'TERM'} = 'px_shutdown';   # TERM signal (15) also shuts down.
+$SIG{'INT'}  = 'px_shutdown';   # INT signal (2) also shuts down.
+$SIG{'PIPE'} = 'IGNORE';        # Ignore error from reading/writing to a failed
+                                # pipe
+
+# Read config and set the alarm to the next read...
+px_mysql::close_dbhandle();
+px_config::readconfig();
+px_mysql::close_dbhandle();
+
+# Open tcp port for listening
+my $my_addr = sockaddr_in ($px_config::config->{s_tcpport}, INADDR_ANY);
+socket (SERVER, PF_INET, SOCK_STREAM, getprotobyname ('tcp'));
+setsockopt (SERVER, SOL_SOCKET, SO_REUSEADDR, 1);
+bind (SERVER, $my_addr) or die ("Could not bind: $!\n");
+listen (SERVER, SOMAXCONN) or die ("Could not listen: $!\n");
+
+# Set statistical info for the server
+px_mysql::open_dbhandle();
+px_mysql::query (constants->QUERY_NOKEEP, "UPDATE perihelion.pxs_info SET uptime=UNIX_TIMESTAMP(), spawns=0, commands=0, status_ok=0, status_err=0");
+px_mysql::close_dbhandle();
+
+
+# Mainloop
+for (;;) {
+  print "Waiting for new client at PID $$\n";
+  accept (CLIENT, SERVER);
+  if (fork() == 0) {
+    # Child: we don't need the server socket
+    close (SERVER);
+    print "Forked process $$\n";
+
+    $main::privilege = NONE;
+    print "* Setting privilege to NONE\n\n";
+
+    # We need to open another handle now, since it's a new thread (win doesn't copy handles to new threads/processes i guess)
+    px_mysql::open_dbhandle ();
+    handle_client ();
+    px_mysql::query (constants->QUERY_NOKEEP, "UPDATE perihelion.pxs_info SET spawns=spawns+1 WHERE galaxy_id LIKE '".$px_config::current_galaxy."'");
+    px_mysql::close_dbhandle();
+    close (CLIENT);
+    print "Process $$ ended.\n";
+    exit;
+  } else {
+    # Parent: we don't need the client socket
+    close (CLIENT);
+  }
+}
+
+# End program
+px_shutdown ("Normal Shutdown()");
+exit;
+
+
+##############################################################################
+# SUB ROUTINES
+##############################################################################
+
+# ================================================================================
+sub px_shutdown ($) {
+  my $msg = shift;
+  if ($msg) { print ("\nSHUTDOWN> $msg\n"); }
+  exit;
+}
+
+# ================================================================================
+sub reaper () {
+  my $stiff = wait;
+  $SIG{CHLD} = \&reaper;
+}
+
+# ================================================================================
+sub item_add ($$$) {
+  my ($listref, $name, $data) = @_;
+
+  $listref->{$name} = $data;
+}
+
+# ================================================================================
+sub tcp_tx ($) {
+  my $tx = $_[0];
+  my ($key, $s);
+
+  foreach $key (keys %$tx) {
+    $s = "$key==>$tx->{$key}\r\n";
+    syswrite (CLIENT, $s);
+    print "TCP_TX(): $s";
+  }
+
+  $s = ".\r\n";
+  syswrite (CLIENT, $s);
+  print "TCP_TX(): $s";
+
+  return $s;
+}
+
+# ================================================================================
+sub tcp_rx () {
+  my ($s, $n, $c);
+
+  $s = "";
+
+  while (1) {
+    $n = sysread (CLIENT, $c, 1);
+    if ($n == 0) { return ""; }
+
+    if ($c eq "\r") { next; }
+    if ($c eq "\n") { last; }
+
+    $s .= $c;
+  }
+  print "TCP_RX(): '$s'\n";
+  return $s;
+}
+
+# ================================================================================
+sub handle_client () {
+  my ($buf, @tmp, $rx, $tx);
+
+  $rx = {};
+  $tx = {};
+
+  for (;;) {
+    do {
+      $buf = tcp_rx ();
+      if ($buf eq "") { return; }
+      if ($buf =~ /==>/) {
+        @tmp = split ("==>", $buf);
+        $tmp[0] =~ s/^\s+//;        # Strip start and end spaces
+        $tmp[0] =~ s/\s+$//;
+        $tmp[1] =~ s/^\s+//;
+        $tmp[1] =~ s/\s+$//;
+        item_add ($rx, $tmp[0], $tmp[1]);
+
+        # if we found a galaxy database entry, load it immediatly..
+        if ($tmp[0] eq "cdb") {
+          px_config::set_galaxy ($tmp[1]);
+        }
+
+      }
+    } while ($buf ne ".");
+
+    # Check out all commands, and if the correct one is found, execute it...
+    foreach my $cmd (@commands) {
+      if ($rx->{pkg_cmd} =~ /^$cmd$/i) {
+
+        # Check privilege by checking the privilege flag in the *.INC file
+        no strict 'refs';
+        my $cmd_privilege = $cmd."_privilege";
+        my $cmd_privilege = $$cmd_privilege;
+        use strict 'refs';
+
+        if ($main::privilege < $cmd_privilege) {
+          print "* WARNING: Unable to execute $cmd: no privilege\n";
+          print "Current privilege : $main::privilege\n";
+          print "Needed privilege  : $cmd_privilege\n";
+
+        } else {
+          # This is a quick hack that let me use a string as
+          # a function-reference while using strict refs..
+          print "Executing $cmd\n";
+          my $tmp = \&{$cmd};
+
+          # Update command counter
+          px_mysql::query (constants->QUERY_NOKEEP, "UPDATE perihelion.pxs_info SET commands=commands+1 WHERE galaxy_id LIKE '".$px_config::current_galaxy."'");
+
+          # Execute command
+          &$tmp ($rx, $tx);
+        }
+      }
+    }
+
+    # Update status counters
+    if ($tx->{status} eq "STATUS_OK") {
+      px_mysql::query (constants->QUERY_NOKEEP, "UPDATE perihelion.pxs_info SET status_ok=status_ok+1 WHERE galaxy_id LIKE '".$px_config::current_galaxy."'");
+    } else {
+      px_mysql::query (constants->QUERY_NOKEEP, "UPDATE perihelion.pxs_info SET status_err=status_err+1 WHERE galaxy_id LIKE '".$px_config::current_galaxy."'");
+    }
+    tcp_tx ($tx);
+  }
+}
+
+
+# ================================================================================
+sub load_win_incs () {
+  print "Incorperated functions: \n";
+
+  # Get all *.inc files, these are commands and their main command must be
+  # the <filename> (without .inc)
+  my @files = `dir /b *.inc`;
+  foreach my $file (@files) {
+      chomp ($file);
+      $file =~ s/\.inc//;
+      require ($file.".inc");
+      push @commands, $file;
+
+      # Show privilege as well
+      no strict 'refs';
+        my $tmp = $file."_privilege";
+        if (not defined $$tmp) { print ("* Error: Cannot locate $tmp in ".$file.".inc"); exit; }
+        my $priv = $$tmp;
+      use strict 'refs';
+
+      if ($priv eq UNRESTRICTED)   {
+        $file = "   ! " . $file;
+      } elsif ($priv eq RESTRICTED) {
+        $file = "   + " . $file;
+      } elsif ($priv eq NONE) {
+        $file = "   - " . $file;
+      } else {
+        $file = "     " . $file;
+      }
+      print pack ("A20", $file);
+  }
+  print "\n\n";
+}
+
+# ================================================================================
+sub load_unix_incs () {
+  print "Incorperated functions: \n";
+
+  my $i = -1;
+
+  # Get all *.inc files, these are commands and their main command must be
+  # the <filename> (without .inc)
+  my @files = `ls -1 *.inc`;
+  foreach my $file (@files) {
+    $i++;
+    if ($i == 5) {
+      print "\n";
+      $i = 0;
+    }
+
+    chomp ($file);
+      $file =~ s/\.inc//;
+      require ($file.".inc");
+      push @commands, $file;
+
+      # Show privilege as well
+      no strict 'refs';
+        my $tmp = $file."_privilege";
+        if (not defined $$tmp) { print ("* Error: Cannot locate $tmp in ".$file.".inc"); exit; }
+        my $priv = $$tmp;
+      use strict 'refs';
+
+      if ($priv eq UNRESTRICTED)   {
+        $file = "   ! " . $file;
+      } elsif ($priv eq RESTRICTED) {
+        $file = "   + " . $file;
+      } elsif ($priv eq NONE) {
+        $file = "   - " . $file;
+      } else {
+        $file = "     " . $file;
+      }
+      print pack ("A20", $file);
+  }
+  print "\n\n";
+}
+
+# ================================================================================
+# Returns true if 'function' is defined (eg. loaded)
+#
+sub function_loaded ($) {
+  my $function = shift;
+
+  return (defined &$function);
+}
+
+
+# ================================================================================
+#
+# vim: ts=4 syntax=perl nowrap
+#

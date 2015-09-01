@@ -1,0 +1,65 @@
+<!-- Standard link decoration -->
+		A:link    {  text-decoration: none;      color: #CCCC33 }
+		A:visited {  text-decoration: none;      color: #CCCC33 }
+		A:hover   {  text-decoration: underline; color: #FFFF66 }
+
+
+<!-- TODO: change this into diffent colors -->
+		.ylw     { color: #CCCC33 }
+		.true    { color: green   }
+		.false   { color: red     }
+
+
+
+<!-- Standard table define -->
+		table.standard {
+                 margin-left : auto;
+                 margin-right: auto;
+                 cellspacing : 0px;
+                 cellpadding : 0px;
+								 border-left   : 2px solid #9595B0;
+							 	 border-top    : 2px solid #9595B0;
+							   border-right  : 2px solid #555570;
+                 border-bottom : 2px solid #555570;
+               }
+
+		.standard TH         { color: black;   background: white   }
+		.standard TR         { color: white;   background: #151530 }
+		.standard TR.odd     { color: white;   background: #151530 }
+		.standard TR.even    { color: white;   background: #252540 }
+		.standard TD.true    { color: green   }
+		.standard TD.false   { color: red     }
+		.standard TR.true    { color: green   }
+		.standard TR.false   { color: red     }
+
+		table.standard2 {
+                 margin-left : auto;
+                 margin-right: auto;
+                 cellspacing : 0px;
+                 cellpadding : 0px;
+								 border-left   : 2px solid #9595B0;
+							 	 border-top    : 2px solid #9595B0;
+							   border-right  : 2px solid #555570;
+                 border-bottom : 2px solid #555570;
+               }
+
+
+<!-- Items for the pager functions (current page, normal page, notused) -->
+		A.pager_numon { font-size: 120%; font-weight: bold; }
+		A.pager_num   {                    }
+		A.pager_text  {                    }
+
+
+<!-- People Classes (<50%, <75% <99% 100%) -->
+		.people_class1    { color: #FFFFFF; }
+		.people_class2    { color: #FF9090; }
+		.people_class3    { color: #FF6060; }
+		.people_class4    { color: #FF0000; }
+
+
+<!-- Planet Classes (normal planet, habitable planet, minable planet, unusable planet) -->
+		.class_normal     { color: white;  }
+		.class_habitable  { color: green;  }
+		.class_minable    { color: yellow; }
+		.class_unusable   { color: red;    }
+

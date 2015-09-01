@@ -1,0 +1,194 @@
+<html>
+<head>
+  <title>Project X - Documentation</title>
+  <style type='text/css'>
+    A:link    {  text-decoration: none; color: #CCCC66}
+    A:visited {  text-decoration: none; color: #CCCC66}
+    A:hover   {  text-decoration: underline; color: red}
+  </style>
+</head>
+
+<body bgcolor=black background=../images/back2.jpg bgproperties=fixed text=white link=white vlink=white alink=white >
+    <center>
+
+    <br>
+    <center><h1>Project X - Buildings</h1></center>
+    <br>
+    <br>
+    <table align=center width=75%><font align=left>
+    Depending on the state of your planets, you can create buildings on the surface. All buildings are categorized
+    in three levels: military, civil and mining.<br>
+    <br>
+    Military: All buildings used for defending the planet. This also includes all exploration and vessel buildings.<br>
+    Civil: All buildings used for populating and keeping them safe and happy.<br>
+    Mining: All buildings used for mining operations<br>
+    </table>
+    <br>
+
+    <br>
+    <br>
+    <table align=center width=75%><font align=left>
+    <tr><td><b><font size=+3>Headquarter</font></b></td></tr><tr><td>
+    You need a headquarter before you can add people onto your planet. You can only support a small number of
+    people inside a headquarter so make sure that you add more space if you want your population to grow.<br>
+    As soon as there are people onto your planet, they will start to multiply. However, as soon as people
+    start to get unhappy or when epidemic breaks out, they will start to flee to other planets and it will
+    decrease your populationcount and hence your incomes.<br>
+    You can only build a headquarter (and therefore populate the planet) when the planet is capable of
+    sustaining life. This depends on the planets class (only K, L and M classes can sustain life) and
+    the percentage of water which has to be at least 50%.
+    </td></tr></font></table>
+
+    <br>
+    <br>
+    <table align=center width=75%><font align=left>
+    <tr><td><b><font size=+3>Powerplant</font></b></td></tr><tr><td>
+    A powerplant produces energy needed for other types of buildings. You can see how many energy your planet
+    needs in the planet and surface view windows. When there is enough power, the output will be in white
+    letters. If you use more than 50% of the planets power output, the writing will be in yellow and after
+    more than 90% the writing will be in red. You cannot build any buildings that need more power than currently
+    generated.<br>
+    </td></tr></font></table>
+
+    <br>
+    <br>
+    <table align=center width=75%><font align=left>
+    <tr><td><b><font size=+3>Mine Station</font></b></td></tr><tr><td>
+    A mining station does not depend on a headquarter and therefore you can deploy mining stations
+    even on planets which are incapable of sustaining life. After creation, the miningdroids will start
+    to mine all ores they can find on the planet. You can add multiple mining droids into a mine so the
+    mining will be quicker. You can see how many ore currently is mined from a planet from the 'mining'-menu.
+    Red means that ore is currently completly mined. Yellow means the ore is almost fully extracted and white
+    means that there is still plenty of ore left on the planet.<br>
+    </td></tr></font></table>
+
+
+    <br>
+    <br>
+    <table align=center width=75%><font align=left>
+    <tr><td><b><font size=+3>Academy</font></b></td></tr><tr><td>
+    You need an academy to train your people. Not implemented yet.<br>
+    </td></tr></font></table>
+
+
+    <br>
+    <br>
+    <table align=center width=75%><font align=left>
+    <tr><td><b><font size=+3>Community Area</font></b></td></tr><tr><td>
+    Community area's are used to house people onto your planet. The more you have, the more people you can
+    add onto your planet.<br>
+    </td></tr></font></table>
+
+
+    <br>
+    <br>
+    <table align=center width=75%><font align=left>
+    <tr><td><b><font size=+3>Orbituarium</font></b></td></tr><tr><td>
+    An orbituarium is a building that houses a large space telescope. With this, your people explore
+    different planets in your sector and beyond. At certain intervals, your scientist will discover new
+    planets. As soon as you found a new planet, you will have to travel to the planet with an exploration
+    vessel so you can check out the planet. After you have traveled to the planet it will show up in the
+    planet and sector view.<br>
+    The exploration interval can be increased in the "science" section of Project X.<br>
+    </td></tr></font></table>
+
+
+    <br>
+    <br>
+    <table align=center width=75%><font align=left>
+    <tr><td><b><font size=+3>Protection Shield</font></b></td></tr><tr><td>
+    The protection shield is first line of defense against hostile attacks. I have no clue on what kind
+    of material a protection shield is made of.<br>
+    </td></tr></font></table>
+
+
+    <br>
+    <br>
+    <table align=center width=75%><font align=left>
+    <tr><td><b><font size=+3>A.D.A.S.</font></b></td></tr><tr><td>
+    ADAS stands for Advanced Defence Against Scum. This shield consists of many sattelites in orbit which
+    are linked together with laserrays. When a ship hits one of those laserrays all energy will be forced
+    into that specific ray and therefore blow up the vessel. It is possible to deactivate certain area's
+    of the shield so friendly vessels can enter the planet without being blown to bits.
+    </td></tr></font></table>
+
+
+    <br>
+    <br>
+    <table align=center width=75%><font align=left>
+    <tr><td><b><font size=+3>Vessel Construction Station</font></b></td></tr><tr><td>
+    In this station you can construct small vessels. Because larger ships cannot break away from the planet's
+    gravity, it's impossible to create those ships from the surface. when you have created a station, you will
+    be able to create ships from this planet. <br>
+    </td></tr></font></table>
+
+
+    <br>
+    <br>
+    <table align=center width=75%><font align=left>
+    <tr><td><b><font size=+3>Advanced Community Area</font></b></td></tr><tr><td>
+    A bigger building where you can house even more people. This building obsoletes the normal community area
+    although you still are able to build it.<br>
+    </td></tr></font></table>
+
+
+    <br>
+    <br>
+    <table align=center width=75%><font align=left>
+    <tr><td><b><font size=+3>Spacedock</font></b></td></tr><tr><td>
+    The spacedock is a vessel construction station in orbit. After building this, you can construct and repair
+    larger ships like battleships.<br>
+    </td></tr></font></table>
+
+
+    <br>
+    <br>
+    <table align=center width=75%><font align=left>
+    <tr><td><b><font size=+3>Advanced Powerplant</font></b></td></tr><tr><td>
+    This type of powerplant is much more efficient then the old ones. Although it obsoletes the old ones, you can
+    still build them.<br>
+    </td></tr></font></table>
+
+
+    <br>
+    <br>
+    <table align=center width=75%><font align=left>
+    <tr><td><b><font size=+3>Planet Exploration Station</font></b></td></tr><tr><td>
+    After you have discovered a planet in your orbituarium you must fly to it in order to explore the surface. An
+    Exploration Station shoots off small probes to the planets and returns the information back to your planet.<br>
+    </td></tr></font></table>
+
+
+    <br>
+    <br>
+    <table align=center width=75%><font align=left>
+    <tr><td><b><font size=+3>Medical Center</font></b></td></tr><tr><td>
+    A medical center makes sure that deceases or extra-terrestial epidemics are quickly resolved. If you fail to
+    build a medical center onto your planet you can loose a lot of people during epidemics.<br>
+    If the sickness-rate of your planet increases, try to build more medical centers.
+    </td></tr></font></table>
+
+
+    <br>
+    <br>
+    <table align=center width=75%><font align=left>
+    <tr><td><b><font size=+3>Recreational Station</font></b></td></tr><tr><td>
+    The people on your planet can enjoy all kind of (virtual) sports inside the recreational center. It keeps the
+    people happy and therefor will stay on your planet. If the happieness-rate of your planet decreases, try to build
+    more centers.
+    </td></tr></font></table>
+
+
+    <br>
+    <br>
+    <table align=center width=75%><font align=left>
+    <tr><td><b><font size=+3>Hydro Station</font></b></td></tr><tr><td>
+    A hydro-station can convert atmosferic gasses into water and pumps it into the oceans. It will increase the planets
+    water level in case it's too low. You can use a hydrostation to increase the water level of your planet.
+    </td></tr></font></table>
+
+
+
+    </center>
+</body>
+</html>

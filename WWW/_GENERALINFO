@@ -1,0 +1,58 @@
+Function Layout
+
+All functions have the same layout:
+
+  comment block
+  function header
+  parameter assertions
+  global declarations
+  variable initialization
+  body
+
+
+* comment block
+The comment block is based on the following template:
+  // ============================================================================================
+  // GetVesselType ()
+  //
+  // Description:
+  //   Gets the vessel type
+  //
+  // Parameters:
+  //   int     $vessel_id           ID of the vessel
+  //
+  // Returns:
+  //   array   array with information about the vessel
+  //
+
+  - First line is a delimiter for all functions.
+  - Second is the name of the function
+  - Description gives a full description of the function. What it does and remarks about
+    the function.
+  - Parameters gives all possible parameters for this function. All parameters should
+    be easily readable like $vessel_id instead of $vid etc. First item is the type of
+    the parameter. Second is the name, third is the description of the parameter.
+  - Returns gives all return values and their types.
+
+If the commentblock is similair for all functions, it is easy to parse all files and
+create documentation for it.
+
+
+* Function header
+The function header is just the normal header of the function
+
+* Parameter Assertions
+All parameters given to the functions should be taken through an assertion function.
+It is not common use to use assert-functions in runtime, but we can use it debugging
+at the moment. All items should be checked for their types (is_numeric, is_string etc)
+or should be checked for their ranges.
+
+* Global declarations
+If needed, we declare global variables at the top of the function.
+
+* Variable initialization
+Variables used globally around the function should be initialized at the top.
+
+* Body
+Rest of the functions follows.
+

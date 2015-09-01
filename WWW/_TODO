@@ -1,0 +1,462 @@
+=======================================================================================================
+- When we are FOE, we cannot enter a sector unless we attack it. Moving to a sector is possible,
+  but we cannot enter to planets if we do not own any planets inside.
+- We cannot move vessels to planets with status FOE.
+- We can move vessels to planets with status FRIEND.
+- We can move vessels to planets with status NEUTRAL but we cannot attack the planet while in orbit.
+* When foe,
+      you cannot orbit an enemy planet unless you attack it.
+      you cannot enter a enemy sector unless you own planets in it. you can only go to your own planets.
+      you can border a sector.
+* When neutral,
+      you can border a sector owned by user.
+      you can attack planet owned by user.
+* When friendly to user,
+      you can border a sector owned by user.
+      you cannot attack a planet from user.
+    V you can setup traderoutes to user.
+=======================================================================================================
+------------------------------------------------------------------------------------------------------
+  * Not done yet
+  C Check functionality
+  V Done
+  U Unfixed or workaround
+-------------------------------------------------------------------------------------------------------
+
+[TODO]
+* Move all html/output into templates through Smarty: seperate html from php code: THIS IS A LOT OF WORK SINCE
+  THE PROJECT IS GETTING WAY TOO BIG!! (so it's best to do it now before it's impossible).
+* We still must do a F5/refresh before the themes go into effect... can we change this?
+* Create an extra required parameter in sql_query: (int)(NO_NULL_ALLOWED, JUST_ONE_ALLOWED, MULTIPLE_ALLOWED).
+  This is needed so we don't have to check each query for the number of rows.
+V Make sure themes are adjusted in preferences/registration (commserver)
+V Template theming: done by creating different templates/css'es into directories and using a theme_id
+  in the u_users. This can be changed in the registration and preferences.
+V Create a {comment}{/comment} block function for smarty.
+V Maybe I should change the help-assigns into blocks. If i'm on the help-page, I only would need HELP_* links, not
+  the rest so it's useless to load them all into the system: help_set_template_vars now takes a prefix
+* Create {comment}{/comment} blocks in each template with standard information (CVS headers etc), variables and
+  possible rarities of the template (same as message-main.tpl)
+* Create in the invention screen like: 'xxx% until new discovery'
+C Changed s_building.building_level into s_building.build_level, sync it.
+C Changed s_vessel.vessel_level into s_vessel.build_level, sync it.
+U Yapter: problems with IF/ELSE/FI inside (repeating) blocks: problem is not within the IF/ELSE but
+  in the design of yapter :| Yapter sux.
+V Find out if it's possible to created 'paged' versions of a template/page. This means that without any real
+  trouble (maybe only calling 1 or 2 functions) we could get instead of a 200 row long table, we should get
+  20 pages with 10 rows each, with the possibility to navigate through all the pages: Yes, it's possible with
+  the {pager} function. However, we must supply $pager_pos to every template we want to page. This means the
+  php-source has to be pager-ready(tm) ie: assign a pager_pos var to the template. This is merely adding 3
+  line before displaying..
+V Make sure all blockrows have a rowclass-variable which can set our <TR> class. This makes it easier
+  to create simple odd/even colored rows: smarty does this already
+U Move all html/output into templates through Yapter: seperate html from php code: THIS IS A LOT OF WORK SINCE
+  THE PROJECT IS GETTING WAY TOO BIG!! (so it's best to do it now before it's impossible): Yapter cannot do
+  everything I need. Moving over to smarty.
+* Place Perihelion into a CVS.
+* Create set invisible on/off in the preferences.
+* $_USER should not be used in functions. Only take $user_id into the functions.
+* Messages doesn't work all the time. Need to check it.
+* create  alliance.php::create_alliance()
+* Invention rates are still wrong on initializing of users.
+* When registering, we should have our home_planet be discovered and set unknown to 0 so we don't
+  need to claim it.
+* When registering, we should have our home_planet set to our home_planet name we want...
+* Maybe we should do no upgrades. Or should we?
+* Change the whole creating and upgrading of vessels thingie
+* See if the heartbeat daemon still works :)
+* Get trade.php to be a little bit quicker.
+* Make sure all PID's are changed into AID's. We don't really use planet Id's or $planet variables
+  unless we are absolutely sure that it's a planet. Otherwise it's an anomaly because we can also
+  build stuff on a starbase or other things like comets which move through the galaxy.
+* If we do a areascan we only have to select vessels and anomalies from distance-5000 to distance+5000.
+  Any other distance above that would not reach the scan area anyway so there is no point selecting them.
+* Vessel_build ticks should not be 6, but s_vessel[ticks]
+* Maximum number of weapons on a ship.
+* After registering, make sure we have a nice return to loginscreen thingie...
+* I don't get convoymove.php::show_owned_convoys()
+* change px_ef_item.  Only use init() and fini() for creating and destruction. For movement between
+  vessels and planets, use something else... Just what is it what you want to do?
+* Scan for enemies at 5000 mark, 4000 mark, 3000 mark, 2000 mark and 1000 mark etc.
+* If we change to ENEMY, make sure the other user also changes into ENEMY: make a function
+  set_relation ($uid, $dst_uid, $relation);
+* Heartbeat: use vessel_level to invent vessels
+* 4 different kind of improvements... what are they exactly? :)
+* If user is in alliance, then only the owner of it can set the relation to other people. If he sets
+  somebody to enemy, all users in that alliance will automaticly set their status to enemy
+* We have to check everybody who also is in this alliance. Make sure we set everybody to friendly, AND
+  set them in the discovered list if not already done so...
+* Don't calc upkeep on the fly, but generate it the same as population count in the
+  execute_xxx_function()'s: [vessel|planet]_[fini|init]_0 for items that are [taken|put] onto
+  a [planet|ship]
+* Alliance creating and disbanding
+* When creating new user: make sure the initial - welcome to projectx message is ok (priority?)
+* When creating new user: make sure the invention_levels are ok (it still isn't)
+* When creating new user: homeplanet of user should have their home planet name (it still doesn't)
+* Set credits to a decent initial_credits
+* Credits should be generated by planet, not by user in credits.inc
+* Let happieness work: 100% = all give credits,  0% none give credits
+* Let sickness work: 0% = no extra deads, 100% all die
+* If we set people to foe, we should decrease the happieness rating. People don't like having enemies :)
+* Mine sweeper takes out mines when bordering a sector, not orbiting a planet since we've already
+  decided that an enemy vessel cannot enter a planet's orbit while beeing enemy..
+* upkeep ores for vessels cannot be done. We need a home_id for each vessel so we know what planet's ore
+  we can take away for upkeep: maybe don't use ore upkeep for vessels?
+* You can unload to other peoples planet, but you cannot load from other peoples planet:
+  and what's with traderoutes then?
+* Random hijacking of vessels by the program.
+* Comets: random anomalies which travels through the galaxy and sectors.
+* If we get interactive with other species (flying into their orbit or something), send
+  message to both parties about discovering a new species, and put them up into the g_knownspecies list
+* When we have explored a surface, we can set the name of the planet even without any vessels in the area.
+  This should not be possible.
+* Power can become negative on a planet when we build more buildings at the same time.
+* Give points to buildings so we can use it for scoring purposes
+* Make sure our population get upgrade a little bit better. Start upgrade faster, end upgrade slower.
+* Check if we could a intersector planet move. We should a separate move-type value in the vessel and
+  queue tables i think.
+* Make the caching functions use 5 or 10 caches instead of just 1.
+  Should be doable. Impossible, but doable: use config.php::$SQL_QUERY_CACHE
+
+Very Low Stuff:
+U Can we erase all table borders and only use the wb and bl class: using CSS in the themes for that
+* Remove all unused variables in the files
+* Make sure the stuff works under other browsers
+U Text galaxy for links users, maybe no galaxy at all : We can do themes now
+* Describe all functions in the WWW
+* Describe all functions in the heartbeat
+* Describe all functions in the pxserver
+
+
+
+
+
+
+
+
+
+- Unfixed or workaround:
+U Alliance achievements: show people what the alliance already did: this is something we cannot automate very easily
+U Add help_links all over the place, and fill the database up with decent help info: we should do this another time
+U Building dependencies when we want to build inventions: it already does.. dumbass!
+U In graphics map, make sure we clip or move the name of a sector in the map.
+U We need to do something with an academy. Maybe we can use it to direct our building paths:
+  we need to input credits into an academy to train people intro military, civilian or mining. When
+  you train people into military, all military buildings and things will cost less than the other 2.
+  Is this an idea?
+U Only heartbeat should update or insert queries, except for the h_queue table, I think: not possible.
+U Change in px_vessel all assert()'s for vessel_id from is_value into is_vessel: euh.. no!
+U The echo() function should parse all strings and make a nice layout: we can use pxtidy for that reason.
+  But beware: it means we have to write a parser.. which is a shitload of work.. :)
+U assert()'s in px_ef_*: nevermind
+U get_planet_items and get_surface are the same. Change one of them. No, we just leave it this way for now
+U Make sure we get refreshed after preference set: images don't get refreshed because
+  they can have the same name as before: doesn't matter for now
+U Create a separate CSS for the pages: not really necessary for now
+U Message.php: show avatar of sending user: we can't because we don't save the userid of the
+  sending party, only the textual name of the race.
+U Check if we can check non existing functions in the perl software: cannot find it :(
+U Check all _POST en _GET vars in the php code.. use them instead of the global thingies...
+  Basicly use: _REQUEST:   We use input_check() function for the vars.
+U something with session_start().. what the f*ck???: Fixed it, but don't know how.. :(
+U Starbases: what to do with it: At this moment, it's just a kind of planet
+U Either use ALL hashes, or none.. but not half/half. If we do it, make sure
+  they are done in a *NICE* way: we change it into normal vars
+U Paramlist should be paramlist with a : at the end: Yeah whatever
+U Show the number of droids in the mines at mining.php: don't do it. We can have
+  more mining products in other galaxies.
+U server: we can update the counters in the child,  but that doesn't update the counter in the parent of course.
+  I think it's time for a little bit of shared memory... No it's not. We use mysql ofcourse :)
+U Status() command in heartbeat server: basicly put all relevant info into the mysql h_info table
+U When creating new user: add a headquarter to the home planet: why?
+U Calculating vessel ticks in 2 different languages is crap. Can we change it somehow: nope...
+U Try to get the manufacturing decent, weapons by weapons: basicly it is, you only need to put it into ships etc..
+U When overpopulated, change status. When more capacity build, change status back, but we need to know the old status
+  as well.. :(
+U Message read/display confirmation: Why!?
+U px_item and px_building: make sure we don't have to use AUTOLOAD, but if we can catch
+  wether or not a function exist...  We can't... :(
+U Make some OOP in the php code: no oop, but all routines are pretty much organised now
+U A ship with only impulse motors OR get lost through a wormhole, OR cannot go through a wormhole
+  OR should use impulse in outerspace (not recommended): why not? we can fly on impulse again through the other side
+  of the wormhole back: vessel with impulse cannot see wormholes at impulse speed when moving vessel.
+U create ore_names in galaxy_configuration ("Xellium", "Augon", etc...): did in constants.pm. Not in configuration for now..
+U Sector.php is still to slow. Is there a faster way? Currently not
+U Discovery of blackholes, nebula's etc, gaat dat wel goed? Does it show up correctly at our sector maps etc? Check
+  later. Looks ok for now.
+U Friend Foe Neutral: setting status done by RELATION()
+U Weapons for battleships: pretty much done by weapon-inventions.
+U increase maxload of the vessels with the vessel-level: no. Static in galaxy config
+U Change the attack and defense strengths a bit, we want vessels to be 10'ths, and planets to be 100rds: dunno if this
+  works..
+U Credits are too low at start: they are. Changed in galaxyt_configuration
+U Get the statement handlers in server.pl decent: not done
+U Create new buildings in 3 trees: military, civilian, mining: have to think about it some more..
+U Status() command in heartbeat server: basicly put all relevant info into the mysql h_info table
+- Check Functionality:
+C If a user is granting a request for an alliance, we should check if it's already joined another (pending) alliance
+C When we build a headquarter, make sure happieness and sickness are set to 100, 0
+C If we fly into outer space, and we encounter an wormhole end, then we fly back through it to the other side again.
+C Move all hardcoded values to the database c_config tables on the galaxies
+C Add 'priority' in the c_config. Make sure we use the entry with the lowest priority.
+C Create wormhole stabilizers as an item when you can build SpaceDock & Exploration Station
+C We only should use the vessel_science when we actually can warp and use impulse. (otherwise we already are on 50%
+  impulse when we build our first ship)
+C Check Happieness and sickness is set to -1 when we createnewsector
+C Do something about speed at impulse.. (1% == 14620 ticks!?).. I think max ticks in a sector should be 200.
+C Change item_count in manufacture.inc into configuration (just like max_building_count)
+C On each tick, increase current strength until fully charged. In starbases you get 5x ticks, spacedocks 2x ticks and in
+  vessel construciton stations 1x tick extra per tick.
+C When generating images for wormholes, nebula's etc, make sure we use the correct picture indices
+  (planets 0..15, wormholes 3..4, etc)
+C General message board
+C Make sure we move vessels from the correct database in move.inc Otherwise we might move ship id 001 from galaxy_001
+  instead of ship id 001 from galaxy_002: we send galaxy_db with every server communication
+C Change angle into integers. This takes care of the selecting floats in mysql.
+C General message board: the level isn't regexed the way it should be (should be between 0..99999)
+C When creating new user: vessel and space invention should be 0, upkeep_costs=0, upkeep_ores=0,0,0,0,0,0,0,
+C Make sure sql_fetchrow returns an error when $result has 0 sets.
+- Fixed:
+V Generate nebula's, wormholes and blackholes (depending on a random percentage or something?)
+V Change g_vessels.type into g_vessels.vessel_id ==> s_vessels
+V Black holes
+V We should accept manual input in vesselmove.php
+V When reach border of sector, check for user_id of sector, if 0, place own user_id on the sector...
+V We should include range-scanning for ships at certain places
+V comm.inc  if msg is not present, make nice errorthingie...
+V Send messages to other known species
+V Tag Lines in userinfo
+V Get info from other users
+V Change showusers.php into only show users only when you discovered somebody...
+V When we fly to an undiscovered planet, we can click on the link in the "flying to planet 5" in the vessel view
+  window. Here we can already set the planet's name before we actually are orbitting the planet.
+V Move ores from g_vessels to i_vessels
+V Scan sector ranges (5000 ly is a nice area)
+V Upgrade should be relative credits, not absolute.. otherwise we spend 500000 credits for upgrading from 99% to 100%
+V When we fly into a blackhole, record the ships lost in s_anomalies[population] where id=blackhole
+V Place number of concurrent construction in database (galaxy::max_building_cnt)
+V When we build something on a planet, we don't get a "OK" confirmationthingie...
+V Change messages into categories
+V Ships should do something: Make sure advanced and standard exploration works...
+V Get heartbeat daemon working again
+V Create planet-classes and make sure we can only build headquarters when the planet can sustain life.
+V Create a nice register screen
+V Let the warp or impulse speed of a vessel decide the arrival time.
+V Check why we can have a 156% ore in stock, we probably must increase the max_ore_X as well.
+V Set a maxload to the vessels
+V Define planet classes properly
+V Conview.php lets us construct and manufacture in N-Z class planets
+V When flying through space, set the distance and angle correctly... Is it the delta now or what???
+V Battle ships
+V Nog steeds een beetje trubbels met the active statements disconnects. Disconnect function deleted... :)
+V Show attack, defense, strength
+V Better zoom function in map
+V Server: when generating homeplanet (is_home_planet=yes), it MUST be a habitable class (KLM)
+V Server: check why we have 0000 at s_sectors.sector
+V When flying to other space, we get some screwups in the queuelist.
+V sector.php doesn't show correct population settings for tamara prime
+V What's the deal with the stock exchange? Dunno, removed it..
+V Could we rename anomolies (wormholes, nebula's)? Yes we can now...
+V user statistics and showuser info should be more or less equal. Change into 'objects' and change
+  stats.php and showusers.php
+V Change classtype into class in s_anomalies.
+V Scan area should not show vessels in nebula's
+V change Orbituarium into observatory
+V What's the deal with nebula's? What is their purpose? Hide stuff? Yes it is.
+V Changes all ores from database into lists (cur_ore_1, cur_ore_2 etc should be cur_ore: ore1,ore2,ore3)
+V Change ores into constants: change ores
+V Remove all hardcoded orelists...
+V At sql_query, make an additional query to update the logout time/date for the user.
+V Make sure update to perihelion.u_access works from user 185251
+V Traderoute, only show planets when is_planet in the source and destination lists..
+V Trade: when we apply for a destination, we should only select friends.
+V Try to place all routines in nice global_*.php packages.
+V Mutual friends.
+V Change all print() into echo""
+V On ID, also send current galaxy
+V Quick html fixup
+V Basicly, the whole create treaderoute stuff is screwed up... make it so...
+V Cargo (not ores) in vessels
+V Only stabilize/unstabilize wormholes when we add/removed first/last stabilizer
+V Create short description that we can see in the list.
+V Make sure we only unstabilize a wormhole when we have no more stabilizers in orbit
+V Change the items and buildings into decent functions. Use 1 function for each item or building.
+V Make sure our items work
+  When we place something to ships and/or planets, check if it's got a special function
+V TICK: item on planet, item on vessel,  building
+V Maybe we could click on a coordinate in the graphic and zoom in to that point? (Don't do it!)
+  I told you.. don't do it... Oh well.. it works now...
+V Image of galaxy into database configuration
+V Change calculate_xy in the graphics.php
+V Check if the ores are correctly setup when we create a new planet
+V create image directory names in galaxy_configuration ("images/001/vessels", "images/001/wormholes", etc)
+V Building/Vessel create, Show upkeep and initial costs in separate windows
+V We don't have to random() our logout_date, because we can do it only the first time we hit the query. Set a boolean
+  flag to false afterwards and we're done...
+V Filter out everything with '<' and '>' when sending to server in comm.inc.php: replaces into &gt; and &lt;
+V Make sector.php and conview.php faster: done by checking how many planets we have in a sector inside a
+  SQL statement first (count). If 0, then don't enter the function...
+V Sector.php is changed. We use a lot of caching functions to make it quicker. Set ob_implicit_flush to no works
+  very well also :)
+V Check if we don't see the galaxy message while impulse
+V Rename sectors when we first own them: done at sectors.php
+V Set checksums in the encryptvars: you can only use the encrypted vars in the current connection.
+V Manufacture create, Show upkeep and initial costs in separate windows
+V scan: cannot see vessels decently.
+V Shortcuts in vessel move
+V Scale on the graphics: we can zoom indefinatly if needed.
+V Change vessel['status']=='ORBIT' into vessel_is_in_orbit ($vessel_id) etc...
+V When flying to outer space, we maybe should be able to see the destination
+  distance and angle: dst_angle, dst_distance
+V Change heartbeat into include-files.
+V Intergrate server and heartbeat: all global *.PM's are located at the px_global directory.
+V Check that all angles are generated as 0 - 360000
+V Cargo should have a green and red button. If it's green, it funcions. If red, it doesn't function (maybe
+  it's a vessel weapon on the planet).
+V Make weaponry move from weaponry to planet IF it's a battleship. If it's a tradeship, we can only
+  carry cargo. Make sure that our item_is_active_in_vessel works (it should check the vessel type).
+V Show presets in the graphics.php
+V Add/remove presets
+V Do the angle/distance of planets a bit decent. We get a lot of troubles now with distance
+  being 2 different things.
+V Manual flight has problems with g_vessels distance / angle
+V Inactive buildings, items and vessels are shown as the NEGATIVE ID NUMBER:
+V do_items() should be faster: if cargo_ids is empty, we can skip it..
+V Make abs() into active_or_inactive()
+V In graphics: neutral sectors is white, enemy sectors is red, mutual friend are green.
+V items in graphics.php like: names yes/no, vessels yes/no, sectors yes/no,  blackholes yes/no etc..
+V don't scale wormholes before zooming, make sure we do it correctly...
+V Change the menu, make submenu's into [ CREATE VESSEL ] etc...
+V Alliance messages: only people on the alliance can see those messages
+V Alliances: basic functions work
+V Only show users from an alliances when we are part of it
+V After we done a req as alliance-owner, we should not be able to req the same item.. Make it an error...
+V We need bigger galaxy graphics (800x800 or even 1600x1600). This makes it much nicer when we zoom
+  in: basicly do mipmapping
+V Show neutral sectors in graphics.php | main.php: we have some sort of problem with neutral sectors.
+  What's the deal with sectors that aren't neutral, friendly, enemy or alliance? Every sector should be
+  one of those: they are.. some sectors have an user_id of 0, which means show as neutral...
+V Show upkeep credits in stock & upkeep
+V What the f is wrong with the mining??? Don't use the same names for different things....
+V When can we join a certain alliance? When we have discovered one of their members of course...
+V Remove all errors->ERR_QUERY_PREPARED (they don't work)
+V Remove *ALL* old-style function callings (&) in heartbeat
+V Status() command in comm server: status.inc
+V Create decent info screen: done
+V Load/unload gives some socket_error stuff.. what's wrong: nothing, we should check with '=== false' not just '== false'
+V Build_level for s_inventions
+V What's an alliance: an group of users who globally set friend/foe/neutral.
+V Get heartbeat daemon working again: removed general.pm
+V use CSL functions for all CSL items...
+V Remove *ALL* old-style function callings (&) in server
+V Make sure that all px_<blah> functions start with the Id of the thing we do. ie: px_planet functions
+  always have $planet_id as the first parameter.
+V ALL return values should be a errors-><whatever>
+V All mysql functions should be in the correct px_<module>
+V main page should be info.php, not main.php
+V print_title:  description should be added to each page
+V Message interception.. Sometimes messages can be intercepted by other users. In create_message() we should add this.
+V Change alliance into a decent function
+V Make decent asserts in the functions.
+V Every function should return an - ERR_<whatever> status or -ERR_OK status. This way we can check if
+  somethings happened during the function, and take appropiate action.
+V Fill in all descriptions
+V Set ERR_OK success   ERR_*  failure in the descriptions
+V All is_<anomalytypes> should be placed into px_anomaly (yes, finaly we have our baseclass!)
+V Change s_planets into s_anomalies
+V Make for all UPDATE functions a px_mysql::update_blahblahblah function, this way, we can control
+  showing messages and setting flags for users when certains things
+V Set up descriptions in server.inc's and heartbeat.inc's
+V The credits are set to zero when building: {costs} instead {initial_costs} given. Fixed with assert()
+V create_building() and px_building::init_0 functions are basicly the same. (same goes with px_vessel
+  and px_item): everything put in init_0
+V global_user.php: +- line 36
+V ID must preceed every other command in the server: made command priorities. High prio command
+  cannot be executed with low prioriy. ID will set higher user priority.
+V Change user preferences and data.
+V Change all colored tables into classes.
+V Make a manual command editor: admin/admin.php
+V input_check needs mandatory parameters like: inputcheck ("cmd", "!sid", "uid", 0) means
+  we can leave out uid, but we need a sid.
+V Don't let the command be generated by aid,bid etc.. make sure we send a CMD at
+  very GET-request  (*.php?cmd=blah&id=blaat etc): input_check() function created
+V USENOCACHE and USECACHE constants for caching functions
+V There cannot be any "global $userinfo"'s in functions. All user information should be given
+  by the calling function with a $user_id. Otherwise we cannot use the same function for a
+  different user.
+V use "user_ourself()" instead of "userinfo['id']"
+V userinfo() in alliance_showinfo() ?
+V Check alliance_showinfo()
+V create user_is_admin()
+V planet_is_discovered_by_user should be anomaly_is_discovered_by_user
+V user_showinfo() uses $user_id as a param, but also gets info from userinfo[]
+V Create admin page where we can fill in encrypted values for GET-pages.
+V Specie name should be in the g_user info i think, not a separate table: user_get_specie
+  changed into user_get_race: only need to change all over the source
+V Make a nice working admin page at admin.php
+V users.php should be a row-menu where we can pick out users, do not show all users at 1 go...
+V graphics.php: still a bit slow. Using sql's FIND_IN_SET function.
+V change g_planets into g_anomalies
+V change in database: all csl items should start with csl_*
+V All functions that make use of CSL fields should use decent CSL-functions
+V Somehow we can't create messages with the message::create_message function: $target should
+  be uppercase instead of lowercase.
+V Undefined subroutine &px_mysql::get_specie_name called at relation.inc line 49.
+V admins should have more info when a query fails: fixed in sql.php
+V sector.php is too slow: 4.56 seconds... lets make it under 2 at least: We now select a sector
+  first, and then show it like we do with the users.
+V Get all assert()'s right.. use "! isempty ($blaat)" instead
+  of assert($blaat) for instance
+V Create building_show_details(), vessel_show_details(), invention_show_details()
+V img should be image everywhere, also in the database
+V Make for all query functions a px_<module>::<dowhatever> function, this way, we can control
+  showing messages and setting flags for users when certains things
+V Make sure we use "defense" everywhere instead of "defence"
+V Change forms: first form method, than hidden inputs, submit last with name and type as submit:
+V All info should have their unit before or after (ores should not be just "1000", but "1000 tons" etc)
+V UPKEEP on everything, with credits and with ores!!!!!
+V Do prefs.php. It doesn't work anymore. IT works again, but the internal is still crap. Need a
+  redecoration because it's something I need for other pages as well.
+V check if we still need explode(",", ...) somewhere.. probably it's a CSL
+V We don't use SQL::g_user/vessel_load. Use it or throw away: threw away
+V If we refresh a posted form, we must make sure that it doesn't do anything.. give each POST form a
+  sort of checksum which can only be done once: created perihelion.formid and
+  form_start/form_end/form_check functions.
+V Anomaly count in sector.php: big difficult query made in sector.php
+V Convoys: basic concept is done.
+V Add our own html-'language' so we can add html tags safely to our description: done at convert_px_to_htmltags()
+V We should be able to add an description to a planets so we can make our planets a little bit more custom.
+V input_check manufacture.php
+V Get html fixed inside messages.
+V Can we catch 2 get-request clicks? Should be doable by checking the encryption-checksum, the same way
+  we do with the POST forms. Maybe we should forget the post forms, and only store the encryption-checksum.
+  No, better yet, we don't store unless we want to store. That means we only store when we build something.
+  This means we have a function call store_checksum() and check_checksum().
+  No, doesn't work. We have a var called frmid which we take onto post-forms and onto get-url's. When
+  present it will check it. Make sure we have frmid as mandatory in input-check().
+V Get the vessels working again.
+V No passing of arrays in functions! Only work with the passing id's. This still is working quickly
+  because of the caching functions for the *_get_* functions.
+V Get frmid field in every php page where we send stuff to the server. Already added the !frmid
+  field into the input_check functions.
+V Rename all the vessel functions into decent namings. I have no clue what each function
+  does, and I created the damn thing...
+V When registering, make sure happyness and sickness are inserted
+V Make functions: user_get_[weakest|strongest]_[ship|planet]()
+V get_vessel_array () should be checked. It's a copy from get_anomaly_array at this point.
+V Create whoisonline.php
+V create global scoring forms
+V Create help screens
+V Get delete messages working
+V Create global $_CONFIG, $_USER, $_GALAXY arrays
+V Modify all hardcoded URI's to configuratable ones
+V Create a CSS file instead of hardcoded CSS inside the header: perihelion.css created.
+V Change projectx to perihelion
+V There should be no difference for a px-server between galaxy_001 and galaxy_002: modified. The default
+  galaxy is now decided by the cdb-field during every communication.
+V Make sure we only call debug_backtrace() on the right php-version level: used function_exists()
+V Templates all creates automaticly all help-vars
+V Added invisible-flag. Users cannot been seen in the whoisonline when this flag is set.
+V Upgrade yapter with IF/ELSE/FI statements
+
+[/TODO]
